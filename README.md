@@ -1,8 +1,8 @@
- **Two-Way SMS Chat with Twilio**
+--> **Two-Way SMS Chat with Twilio**
 
 I built this project to explore two-way SMS communication using Twilio US numbers. The goal was to create a simple system where you can send messages and instantly receive replies — just like a real chat.
 
- **What it does**
+ -->**What it does**
 
 Send SMS messages from a Twilio-powered US number
 
@@ -12,7 +12,7 @@ Store all conversations (sent + received) in a database
 
 Easily view message history for tracking or debugging
 
-**Tech Stack**
+--> **Tech Stack**
 
 Twilio API – to send/receive SMS
 
@@ -22,7 +22,7 @@ Webhooks – to catch incoming messages
 
 Database – MySQL
 
- **How it works**
+ --> **How it works**
 
 I send an SMS from my Twilio number.
 
