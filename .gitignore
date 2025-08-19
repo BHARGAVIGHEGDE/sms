@@ -1,0 +1,6 @@
+#environment files
+.env
+*.env
+
+#custom ignore
+flask_session
