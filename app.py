@@ -25,8 +25,8 @@ client = Client(ACCOUNT_SID, AUTH_TOKEN)
 # SQL Server connection
 conn = pyodbc.connect(
     'DRIVER={ODBC Driver 17 for SQL Server};'
-    'SERVER=Pradeep;'
-    'DATABASE=sms;'
+    'SERVER="your server name";'
+    'DATABASE="your database name";'
     'Trusted_Connection=yes;'
 )
 cursor = conn.cursor()

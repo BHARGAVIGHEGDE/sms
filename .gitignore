@@ -1,6 +1,36 @@
-#environment files
+# --- Environment files ---
 .env
 *.env
 
-#custom ignore
-flask_session
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore db_config if it contains secrets
+db_config.py
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# --- Flask ---
+instance/
+flask_session/
+
+# --- Node.js (if using) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# --- Logs ---
+*.log
+
+# --- OS / Editor files ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
