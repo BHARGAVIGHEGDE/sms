@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SMS Logs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .truncate-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .pagination .page-link {
+    background-color: #343a40; /* dark table header color */
+    color: #fff;
+    border-color: #343a40;
+}
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd; /* Bootstrap primary */
+    border-color: #0d6efd;
+}
+.pagination .page-link:hover {
+    background-color: #495057;
+    color: #fff;
+}
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background-color: #343a40;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+}
+
+    </style>
+  
+</head>
+<body class="p-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h2 class="mb-0 flex-grow-1" style="font-size: 1.5rem;">📜 Message Logs</h2>
+
+    <div class="d-flex flex-wrap align-items-center gap-2" style="flex-shrink: 1;">
+        <div class="input-group input-group-sm" style="width: 220px;">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search">
+        </div>
+
+        <a href="{{ url_for('index') }}" class="btn btn-sm btn-secondary">Back to Console</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-danger">Logout</a>
+    </div>
+</div>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+          <th style="width: 150px;">
+    <form method="GET" id="dateFilterForm">
+    <label class="form-label mb-1">Date & Time</label>
+    <input type="date" name="date" class="form-control form-control-sm date-filter" value="{{ request.args.get('date', '') }}">
+</form>
+</th>
+                    <th style="width: 120px;">From</th>
+                    <th style="width: 120px;">To</th>
+                    <th style="width: 100px;">Message</th>
+                    <th style="width: 100px;">Segments</th>
+                    <th style="width: 100px;">Cost (INR)</th>
+                    <th style="width: 120px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td style="max-width: 150px;">
+                        {% set sent_at = log[0].strftime('%Y-%m-%d %H:%M:%S') %}
+                        <span class="d-inline-block text-truncate" style="max-width: 140px;"
+                              {% if sent_at|length > 30 %} title="{{ sent_at|e }}" {% endif %}>
+                            {{ sent_at }}
+                        </span>
+                    </td>
+                    <td style="max-width: 120px;">
+                        {% set from_number = log[1] %}
+                        <span class="d-inline-block text-truncate" style="max-width: 110px;"
+                              {% if from_number|length > 30 %} title="{{ from_number|e }}" {% endif %}>
+                            {{ from_number }}
+                        </span>
+                    </td>
+                    <td style="max-width: 120px;">
+                        {% set to_number = log[2] %}
+                        <span class="d-inline-block text-truncate" style="max-width: 110px;"
+                              {% if to_number|length > 30 %} title="{{ to_number|e }}" {% endif %}>
+                            {{ to_number }}
+                        </span>
+                    </td>   
+                    <td style="max-width: 120px;">
+                        {% set message = log[3] %}
+                        <span class="d-inline-block text-truncate" style="max-width: 110px;"
+                              {% if message|length > 30 %} title="{{ message|e }}" {% endif %}>
+                            {{ message }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ log[5] }}</span>
+                    </td>
+                    <td>₹{{ log[6] }}</td>
+                    <td style="width: 120px;">
+                        {% set status = log[4] %}
+                        <span class="badge 
+                            {% if status|lower == 'delivered' %}bg-success
+                            {% elif 'failed' in status|lower %}bg-danger
+                            {% elif status|lower == 'queued' %}bg-info text-dark
+                            {% elif status|lower == 'sent' %}bg-primary
+                            {% else %}bg-warning text-dark
+                            {% endif %}"
+                            style="display: inline-block; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            {% if status|length > 30 %} title="{{ status|e }}" {% endif %}>
+                            {{ status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+     <script>
+document.getElementById("searchInput").addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll("tbody tr");
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? "" : "none";
+    });
+});
+
+document.querySelector('.date-filter').addEventListener('change', function () {
+    document.getElementById('dateFilterForm').submit();
+});
+
+</script>
+</body>
+{% if total_pages > 1 %}
+<nav aria-label="Page navigation" class="fixed-bottom bg-dark py-2">
+  <ul class="pagination justify-content-center mb-0">
+    {% if page > 1 %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page - 1 }}{% if request.args.get('date') %}&date={{ request.args.get('date') }}{% endif %}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+    <li class="page-item {% if p == page %}active{% endif %}">
+      <a class="page-link" href="?page={{ p }}{% if request.args.get('date') %}&date={{ request.args.get('date') }}{% endif %}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}">{{ p }}</a>
+    </li>
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page + 1 }}{% if request.args.get('date') %}&date={{ request.args.get('date') }}{% endif %}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+</html>
+
+
