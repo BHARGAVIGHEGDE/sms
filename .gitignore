@@ -8,7 +8,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ignore db_config if it contains secrets
+
 db_config.py
 
 # Virtual environments
@@ -20,7 +20,7 @@ ENV/
 instance/
 flask_session/
 
-# --- Node.js (if using) ---
+# --- Node.js 
 node_modules/
 npm-debug.log
 yarn-error.log
